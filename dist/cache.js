@@ -43,6 +43,7 @@ const createCachingMethods = ({
       }
 
       console.log('cache miss', id);
+      loader.clear(id);
       const doc = await loader.load(id);
 
       if (Number.isInteger(ttl)) {
