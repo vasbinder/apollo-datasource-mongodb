@@ -38,9 +38,11 @@ const createCachingMethods = ({
       const cacheDoc = await cache.get(key);
 
       if (cacheDoc) {
+        console.log('cache hit', id);
         return JSON.parse(cacheDoc);
       }
 
+      console.log('cache miss', id);
       const doc = await loader.load(id);
 
       if (Number.isInteger(ttl)) {
@@ -59,7 +61,10 @@ const createCachingMethods = ({
         ttl
       })));
     },
-    deleteFromCacheById: id => cache.delete(cachePrefix + id)
+    deleteFromCacheById: id => {
+      console.log('cache delete', id);
+      cache.delete(cachePrefix + id);
+    }
   };
   return methods;
 };
