@@ -11,7 +11,7 @@ const orderDocs = ids => docs => {
   return ids.map(id => idMap[id])
 }
 
-export const createCachingMethods = ({ collection, cache }) => {
+export const createCachingMethods = ({ collection, cache, requestId }) => {
   const loader = new DataLoader(ids =>
     collection
       .find({ _id: { $in: ids } })
@@ -23,7 +23,7 @@ export const createCachingMethods = ({ collection, cache }) => {
 
   const methods = {
     findOneById: async (id, { ttl } = {}) => {
-      const key = cachePrefix + id
+      const key = cachePrefix + id + requestId
 
       const cacheDoc = await cache.get(key)
       if (cacheDoc) {
@@ -39,9 +39,12 @@ export const createCachingMethods = ({ collection, cache }) => {
       return doc
     },
     findManyByIds: (ids, { ttl } = {}) => {
-      return Promise.all(ids.map(id => methods.findOneById(id, { ttl })))
+      return Promise.all(ids.map(id => methods.findOneById(id, requestId, { ttl })))
     },
-    deleteFromCacheById: id => cache.delete(cachePrefix + id)
+    deleteFromCacheById: id => {
+      const key = cachePrefix + id + requestId
+      cache.delete(key)
+    }
   }
 
   return methods

@@ -29,7 +29,8 @@ class MongoDataSource extends DataSource {
 
     const methods = createCachingMethods({
       collection: this.collection,
-      cache: cache || new InMemoryLRUCache()
+      cache: cache || new InMemoryLRUCache(),
+      requestId: Math.random()
     })
 
     Object.assign(this, methods)
