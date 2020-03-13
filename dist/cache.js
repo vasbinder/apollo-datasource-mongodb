@@ -22,7 +22,8 @@ const orderDocs = ids => docs => {
 
 const createCachingMethods = ({
   collection,
-  cache
+  cache,
+  requestId
 }) => {
   const loader = new _dataloader.default(ids => collection.find({
     _id: {
@@ -34,15 +35,15 @@ const createCachingMethods = ({
     findOneById: async (id, {
       ttl
     } = {}) => {
-      const key = cachePrefix + id;
+      const key = cachePrefix + id + requestId;
       const cacheDoc = await cache.get(key);
 
       if (cacheDoc) {
-        console.log('cache hit', id);
+        console.log('cache hit', id, ' ', requestId);
         return JSON.parse(cacheDoc);
       }
 
-      console.log('cache miss', id);
+      console.log('cache miss', id, ' ', requestId);
       loader.clear(id);
       const doc = await loader.load(id);
 
@@ -58,13 +59,14 @@ const createCachingMethods = ({
     findManyByIds: (ids, {
       ttl
     } = {}) => {
-      return Promise.all(ids.map(id => methods.findOneById(id, {
+      return Promise.all(ids.map(id => methods.findOneById(id, requestId, {
         ttl
       })));
     },
     deleteFromCacheById: id => {
-      console.log('cache delete', id);
-      cache.delete(cachePrefix + id);
+      const key = cachePrefix + id + requestId;
+      console.log('cache delete', id, ' ', requestId);
+      cache.delete(key);
     }
   };
   return methods;
