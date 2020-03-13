@@ -39,11 +39,9 @@ const createCachingMethods = ({
       const cacheDoc = await cache.get(key);
 
       if (cacheDoc) {
-        console.log('cache hit', id, ' ', requestId);
         return JSON.parse(cacheDoc);
       }
 
-      console.log('cache miss', id, ' ', requestId);
       loader.clear(id);
       const doc = await loader.load(id);
 
@@ -65,7 +63,6 @@ const createCachingMethods = ({
     },
     deleteFromCacheById: id => {
       const key = cachePrefix + id + requestId;
-      console.log('cache delete', id, ' ', requestId);
       cache.delete(key);
     }
   };
