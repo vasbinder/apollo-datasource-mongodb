@@ -30,6 +30,7 @@ export const createCachingMethods = ({ collection, cache, requestId }) => {
         return JSON.parse(cacheDoc)
       }
 
+      loader.clear(id)
       const doc = await loader.load(id)
       if (Number.isInteger(ttl)) {
         // https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-caching#apollo-server-caching
