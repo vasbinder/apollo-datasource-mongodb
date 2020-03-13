@@ -37,12 +37,10 @@ class MongoDataSource extends _apolloDatasource.DataSource {
     cache
   } = {}) {
     this.context = context;
-    const requestId = Math.random();
-    console.log('-------- NEW DATA SOURCE ----------- ' + requestId);
     const methods = (0, _cache.createCachingMethods)({
       collection: this.collection,
       cache: cache || new _apolloServerCaching.InMemoryLRUCache(),
-      requestId
+      requestId: Math.random()
     });
     Object.assign(this, methods);
   }
